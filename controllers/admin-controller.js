@@ -42,6 +42,11 @@ const adminController = {
   },
 
   getUsers: (req, res, next) => {
+    // pagination
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const offset = (page - 1) * limit
+
     return User.findAll({
       attributes: {
         include: [
@@ -63,6 +68,8 @@ const adminController = {
       order: [[literal('tweetCount'), 'DESC']],
       raw: true,
       nest: true,
+      limit,
+      offset
     })
       .then((users) => {
         if (!users) throw new Error('No users found')
